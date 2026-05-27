@@ -1,27 +1,54 @@
-
-
-export type Link = {
-  title: string;
-  url: string;
-}
+import { extractHashtags } from "../../shared/helpers/extract.hashtags";
+import { CreatePostParams } from "../types/post";
 
 export class Post {
 
-  constructor(
-    private readonly _id: string,
-    private readonly _userId: string,
-    private _content: string,
-    private _media: string[] = [],
-    private _links: Link[] = [],
-    private _mentions: string[] = [],
-    private _hashtags: string[] = [],
-    private readonly _createdAt: Date = new Date(),
-    private _updatedAt: Date = new Date()
-  ) {}
+  private _id?: string;
 
+  private _userId: string;
 
+  private _content: string;
 
-  get id(): string {
+  private _media: string[];
+
+  private _hashtags: string[];
+
+  private _isListed: boolean;
+
+  private _isDeleted: boolean;
+
+  private _createdAt: Date;
+
+  private _updatedAt: Date;
+
+  constructor(params: CreatePostParams) {
+
+    this.validatePost(params);
+
+    this._id = params.id;
+
+    this._userId = params.userId;
+
+    this._content = (params.content as string).trim();
+
+    this._media = params.media || [];
+
+    this._hashtags = extractHashtags(this._content);
+
+    this._isListed = params.isListed ?? true;
+
+    this._isDeleted = params.isDeleted ?? false;
+
+    this._createdAt = params.createdAt || new Date();
+
+    this._updatedAt = params.updatedAt || new Date();
+  }
+
+  // ======================
+  // Getters
+  // ======================
+
+  get id(): string | undefined {
     return this._id;
   }
 
@@ -34,19 +61,19 @@ export class Post {
   }
 
   get media(): string[] {
-    return this._media;
-  }
-
-  get links(): Link[] {
-    return this._links;
-  }
-
-  get mentions(): string[] {
-    return this._mentions;
+    return [...this._media];
   }
 
   get hashtags(): string[] {
-    return this._hashtags;
+    return [...this._hashtags];
+  }
+
+  get isListed(): boolean {
+    return this._isListed;
+  }
+
+  get isDeleted(): boolean {
+    return this._isDeleted;
   }
 
   get createdAt(): Date {
@@ -55,5 +82,105 @@ export class Post {
 
   get updatedAt(): Date {
     return this._updatedAt;
+  }
+
+  // ======================
+  // Business Methods
+  // ======================
+
+  updateContent(content: string): void {
+
+    if (!content || !content.trim()) {
+      throw new Error(
+        "Post content is required"
+      );
+    }
+
+    this._content = content.trim();
+
+    this._hashtags = extractHashtags(
+      this._content
+    );
+
+    this.touch();
+  }
+
+  updateMedia(media: string[]): void {
+
+    this._media = media;
+
+    this.touch();
+  }
+
+  softDelete(): void {
+
+    if (this._isDeleted) {
+      throw new Error(
+        "Post already deleted"
+      );
+    }
+
+    this._isDeleted = true;
+
+    this._isListed = false;
+
+    this.touch();
+  }
+
+  restore(): void {
+
+    if (!this._isDeleted) {
+      throw new Error(
+        "Post is not deleted"
+      );
+    }
+
+    this._isDeleted = false;
+
+    this._isListed = true;
+
+    this.touch();
+  }
+
+  // ======================
+  // Private Helpers
+  // ======================
+
+  private touch(): void {
+
+    this._updatedAt = new Date();
+  }
+
+  private validatePost(
+    params: CreatePostParams
+  ): void {
+
+    if (
+      !params.content ||
+      !params.content.trim()
+    ) {
+      throw new Error(
+        "Post content is required"
+      );
+    }
+  }
+
+  // ======================
+  // Serialization
+  // ======================
+
+  toJSON() {
+
+    return {
+      id: this._id,
+      userId: this._userId,
+      content: this._content,
+      media: this._media,
+      hashtags: this._hashtags,
+      is_listed: this._isListed,
+      is_deleted: this._isDeleted,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt
+    };
   }
 }

@@ -1,22 +1,6 @@
 import mongoose from "mongoose";
 
 
-const linkSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true
-    },
-
-    url: {
-      type: String,
-      required: true
-    }
-  },
-
-  { _id: false }
-);
-
 const postSchema = new mongoose.Schema(
 
   {
@@ -36,17 +20,6 @@ const postSchema = new mongoose.Schema(
       default: []
     },
 
-    links: {
-      type: [linkSchema],
-      default: []
-    },
-
-    mentions: {
-      type: [String],
-      default: [],
-      index: true
-    },
-
     hashtags: {
       type: [String],
       default: [],
@@ -54,12 +27,12 @@ const postSchema = new mongoose.Schema(
       index: true
     },
 
-    is_listed: {
+    isListed: {
         type: Boolean,
         default: true
     },
 
-    is_deleted: {
+    isDeleted: {
         type: Boolean,
         default: false
     }
