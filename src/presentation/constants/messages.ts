@@ -9,5 +9,8 @@ export const messages = {
     POST_UPDATED : "Post updated successfully",
     POST_DELETED : "Post deleted successfully",
     POST_FETCHED_SUCCESSFULLY : "Post fetched successfully",
-    POST_STATUS_UPDATED : "Post listing status updated"
+    POST_STATUS_UPDATED : "Post listing status updated",
+    POST_CONTENT_REQUIRED : "Post content is required !",
+    POST_ALREADY_DELETED : "Post already deleted",
+    POST_NOT_DELETED : "Post is not deleted"
 }

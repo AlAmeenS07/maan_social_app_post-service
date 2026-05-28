@@ -6,6 +6,8 @@ import { PostRepository } from "../../../infrastructure/repositories/posts/post.
 import { UpdatePost } from "../../../application/useCases/posts/user/update.post"
 import { DeletePost } from "../../../application/useCases/posts/user/delete.post"
 import { GetAllPosts } from "../../../application/useCases/posts/user/get.all.posts"
+import { validate } from "../../middlewares/validation.middleware"
+import { createPostSchema, updatePostSchema } from "../../validations/post.validation"
 
 const router = Router()
 
@@ -22,8 +24,8 @@ const getAllPosts = new GetAllPosts(postRepo)
 const postController = new PostController(createPostUseCase, updatePostUseCase, deletePostUseCase , getAllPosts)
 
 router.get("/" , postController.getAllPosts)
-router.post("/" , postController.createPost)
-router.put("/:postId" , postController.updatePost)
+router.post("/" , validate(createPostSchema) , postController.createPost)
+router.put("/:postId" , validate(updatePostSchema) , postController.updatePost)
 router.patch("/:postId" , postController.deletePost)
 
 

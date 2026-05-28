@@ -17,11 +17,7 @@ export class CreatePost implements ICreatePost {
             media: data.media
         });
 
-        console.log("before-db" , post)
-
         const createdPost = await this.postRepository.create(post);
-
-        console.log("after-db" , createdPost)
 
         return createdPost;
     }

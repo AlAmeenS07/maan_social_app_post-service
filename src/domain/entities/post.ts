@@ -1,3 +1,6 @@
+import { messages } from "../../presentation/constants/messages";
+import { statusCodes } from "../../presentation/constants/status.codes";
+import { AppError } from "../../presentation/middlewares/error.middleware";
 import { extractHashtags } from "../../shared/helpers/extract.hashtags";
 import { CreatePostParams } from "../types/post";
 
@@ -44,9 +47,6 @@ export class Post {
     this._updatedAt = params.updatedAt || new Date();
   }
 
-  // ======================
-  // Getters
-  // ======================
 
   get id(): string | undefined {
     return this._id;
@@ -84,16 +84,10 @@ export class Post {
     return this._updatedAt;
   }
 
-  // ======================
-  // Business Methods
-  // ======================
-
   updateContent(content: string): void {
 
     if (!content || !content.trim()) {
-      throw new Error(
-        "Post content is required"
-      );
+      throw new AppError(messages.POST_CONTENT_REQUIRED, statusCodes.BAD_REQUEST);
     }
 
     this._content = content.trim();
@@ -115,9 +109,7 @@ export class Post {
   softDelete(): void {
 
     if (this._isDeleted) {
-      throw new Error(
-        "Post already deleted"
-      );
+      throw new AppError(messages.POST_ALREADY_DELETED, statusCodes.BAD_REQUEST);
     }
 
     this._isDeleted = true;
@@ -130,9 +122,7 @@ export class Post {
   restore(): void {
 
     if (!this._isDeleted) {
-      throw new Error(
-        "Post is not deleted"
-      );
+      throw new AppError(messages.POST_NOT_DELETED, statusCodes.BAD_REQUEST);
     }
 
     this._isDeleted = false;
@@ -142,32 +132,19 @@ export class Post {
     this.touch();
   }
 
-  // ======================
-  // Private Helpers
-  // ======================
 
   private touch(): void {
 
     this._updatedAt = new Date();
   }
 
-  private validatePost(
-    params: CreatePostParams
-  ): void {
+  private validatePost(params: CreatePostParams): void {
 
-    if (
-      !params.content ||
-      !params.content.trim()
-    ) {
-      throw new Error(
-        "Post content is required"
-      );
+    if (!params.content || !params.content.trim()) {
+      throw new AppError(messages.POST_CONTENT_REQUIRED, statusCodes.BAD_REQUEST);
     }
   }
 
-  // ======================
-  // Serialization
-  // ======================
 
   toJSON() {
 
