@@ -16,8 +16,6 @@ export class AdminPostController {
 
         async (req: Request, res: Response) => {
 
-            console.log("Req-query" , req.query)
-
             const {search, status, from, to, page = 10, limit = 10} = req.query;
 
             const data = {

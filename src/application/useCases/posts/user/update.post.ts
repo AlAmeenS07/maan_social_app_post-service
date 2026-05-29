@@ -2,6 +2,7 @@ import { Post } from "../../../../domain/entities/post";
 import { IPostRepository } from "../../../../domain/interfaces/posts/Ipost.repository";
 import { IUpdatePost } from "../../../../domain/interfaces/posts/Ipost.usecases";
 import { UpdatePostDTO } from "../../../../domain/types/post";
+import { publishPostSyncEvent } from "../../../../infrastructure/kafka/producer/post.sync.producer";
 import { messages } from "../../../../presentation/constants/messages";
 import { statusCodes } from "../../../../presentation/constants/status.codes";
 import { AppError } from "../../../../presentation/middlewares/error.middleware";
@@ -15,8 +16,6 @@ export class UpdatePost implements IUpdatePost {
     async execute(data: UpdatePostDTO): Promise<Post> {
 
         const post = await this.postRepository.findById(data.postId);
-
-        console.log(post)
 
         if (!post) {
             throw new AppError(messages.POST_NOT_FOUND, statusCodes.NOT_FOUND);
@@ -35,6 +34,8 @@ export class UpdatePost implements IUpdatePost {
         if (!updatedPost) {
             throw new AppError(messages.FAILED_TO_UPDATE)
         }
+
+        await publishPostSyncEvent(updatedPost.id as string)
 
         return updatedPost;
     }

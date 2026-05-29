@@ -1,6 +1,7 @@
 import { IPostRepository } from "../../../../domain/interfaces/posts/Ipost.repository";
 import { IDeletePost } from "../../../../domain/interfaces/posts/Ipost.usecases";
 import { DeletePostDTO } from "../../../../domain/types/post";
+import { publishPostSyncEvent } from "../../../../infrastructure/kafka/producer/post.sync.producer";
 import { messages } from "../../../../presentation/constants/messages";
 import { statusCodes } from "../../../../presentation/constants/status.codes";
 import { AppError } from "../../../../presentation/middlewares/error.middleware";
@@ -30,5 +31,8 @@ export class DeletePost implements IDeletePost {
     if (!deleted) {
       throw new AppError(messages.FAILED_TO_DELETE);
     }
+
+    await publishPostSyncEvent(post.id as string)
+
   }
 }
