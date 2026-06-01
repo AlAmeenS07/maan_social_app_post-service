@@ -1,4 +1,5 @@
 
+import { isDataView } from "node:util/types";
 import { Post } from "../../../domain/entities/post";
 import { IPostRepository } from "../../../domain/interfaces/posts/Ipost.repository";
 import { AdminGetPostsDTO } from "../../../domain/types/post";
@@ -17,9 +18,16 @@ export class PostRepository extends BaseRepository<Post, any> implements IPostRe
         return posts
     }
 
+    async findAllByUserId(userId: string): Promise<Post[]> {
+        const posts = await this.find({userId , isDeleted : false})
+        return posts
+    }
+
     async findAdminPosts({ search, status, from, to, page, limit }: AdminGetPostsDTO): Promise<{ posts: Post[]; total: number; totalPages: number; }> {
 
-        const filter: any = {};
+        const filter: any = {
+            isDeleted : false
+        };
 
         if (search) {
             filter.content = {

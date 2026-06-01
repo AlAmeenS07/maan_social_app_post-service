@@ -7,4 +7,7 @@ export interface IPostRepository extends IBaseRepository<Post> {
   findByUserId(userId: string): Promise<Post[]>;
 
   findAdminPosts({search,status,from,to,page,limit} : AdminGetPostsDTO) : Promise<{posts : Post[] , total : number , totalPages : number}>
+
+  findAllByUserId(userId: string) : Promise<Post[]>
+
 }

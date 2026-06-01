@@ -25,3 +25,6 @@ export interface IAdminGetPosts {
 export interface ITogglePostListing{
     execute(postId: string) : Promise<Post | null>
 }
+export interface IAdminGetUserPosts {
+    execute(id: string) : Promise<Post[]>
+}

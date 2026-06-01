@@ -11,7 +11,7 @@ export const createPostSchema = z.object({
 
    media: z
       .array(
-         z.string().url("Invalid media URL")
+         z.string("Invalid media URL")
       )
       .optional()
 });
@@ -28,7 +28,7 @@ export const updatePostSchema = z.object({
 
    media: z
       .array(
-         z.string().url("Invalid media URL")
+         z.string("Invalid media URL")
       )
       .optional()
 });

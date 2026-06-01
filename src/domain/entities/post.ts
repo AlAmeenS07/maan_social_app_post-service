@@ -154,8 +154,8 @@ export class Post {
       content: this._content,
       media: this._media,
       hashtags: this._hashtags,
-      is_listed: this._isListed,
-      is_deleted: this._isDeleted,
+      isListed: this._isListed,
+      isDeleted: this._isDeleted,
       createdAt: this._createdAt,
       updatedAt: this._updatedAt
     };

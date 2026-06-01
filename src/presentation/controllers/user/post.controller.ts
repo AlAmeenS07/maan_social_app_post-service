@@ -7,6 +7,8 @@ import { statusCodes } from "../../constants/status.codes";
 import { ICreatePost, IDeletePost, IGetAllPosts, IUpdatePost } from "../../../domain/interfaces/posts/Ipost.usecases";
 import { successResponse } from "../../utils/response.hanlder";
 import { AppError } from "../../middlewares/error.middleware";
+import { createPostsIndex } from "../../../infrastructure/elasticsearch/index/post.index";
+import { createPostSchema } from "../../validations/post.validation";
 
 export class PostController {
     constructor(
@@ -71,7 +73,7 @@ export class PostController {
 
         const posts = await this._getAllPostsUseCase.execute(userId)
 
-        successResponse(res, posts, messages.POST_FETCHED_SUCCESSFULLY)
+        successResponse(res, posts , messages.POST_FETCHED_SUCCESSFULLY)
     })
 
 }
