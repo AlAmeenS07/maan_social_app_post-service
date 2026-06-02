@@ -1,7 +1,9 @@
 import { Post } from "../../../../domain/entities/post";
 import { IPostRepository } from "../../../../domain/interfaces/posts/Ipost.repository";
 import { ITogglePostListing } from "../../../../domain/interfaces/posts/Ipost.usecases";
+import { publishPostSyncEvent } from "../../../../infrastructure/kafka/producer/post.sync.producer";
 import { messages } from "../../../../presentation/constants/messages";
+import { statusCodes } from "../../../../presentation/constants/status.codes";
 import { AppError } from "../../../../presentation/middlewares/error.middleware";
 
 export class TogglePostListing implements ITogglePostListing {
@@ -30,9 +32,14 @@ export class TogglePostListing implements ITogglePostListing {
             updatedAt: new Date()
         });
 
-        return await this.postRepo.update(
-            postId,
-            updatedPost
-        );
+        const updatedPostRes =  await this.postRepo.update(postId, updatedPost);
+
+        if(!updatedPostRes){
+            throw new AppError(messages.POST_NOT_FOUND , statusCodes.NOT_FOUND)
+        }
+
+        await publishPostSyncEvent(updatedPostRes.id as string)
+
+        return updatedPostRes
     }
 }

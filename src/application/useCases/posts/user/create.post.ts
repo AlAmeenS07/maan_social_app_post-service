@@ -2,6 +2,7 @@ import { Post } from "../../../../domain/entities/post";
 import { IPostRepository } from "../../../../domain/interfaces/posts/Ipost.repository";
 import { ICreatePost } from "../../../../domain/interfaces/posts/Ipost.usecases";
 import { CreatePostDTO, CreatePostType } from "../../../../domain/types/post";
+import { publishPostSyncEvent } from "../../../../infrastructure/kafka/producer/post.sync.producer";
 
 export class CreatePost implements ICreatePost {
 
@@ -18,6 +19,8 @@ export class CreatePost implements ICreatePost {
         });
 
         const createdPost = await this.postRepository.create(post);
+
+        await publishPostSyncEvent(createdPost.id as string)
 
         return createdPost;
     }
