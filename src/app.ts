@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./presentation/middlewares/error.middleware";
 import userRoutes from "./presentation/routes/user/user.routes";
@@ -8,6 +7,8 @@ import adminRoutes from "./presentation/routes/admin/admin.routes";
 import { consumer, producer } from "./config/kafka";
 import { createPostsIndex } from "./infrastructure/elasticsearch/index/post.index";
 import { startPostSyncConsumer } from "./infrastructure/kafka/consumer/post.sync.consumer";
+import { metricsMiddleware } from "./presentation/middlewares/metrics.middleware";
+import register from "./config/prom.client";
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+app.use(metricsMiddleware)
+
 // app.use(cors({
 //   origin : "*",
 //   credentials : true
@@ -29,6 +32,13 @@ app.get("/", (req, res) => {
 
 app.use(process.env.API_USER_ROUTE as string, userRoutes)
 app.use(process.env.API_ADMIN_ROUTE as string, adminRoutes)
+
+app.get(process.env.API_METRICS_ROUTE as string, async (_req, res) => {
+  res.set("Content-Type", register.contentType);
+
+  res.end(await register.metrics());
+
+});
 
 app.use(errorHandler)
 
