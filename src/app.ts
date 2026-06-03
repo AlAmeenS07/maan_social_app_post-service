@@ -9,6 +9,7 @@ import { createPostsIndex } from "./infrastructure/elasticsearch/index/post.inde
 import { startPostSyncConsumer } from "./infrastructure/kafka/consumer/post.sync.consumer";
 import { metricsMiddleware } from "./presentation/middlewares/metrics.middleware";
 import register from "./config/prom.client";
+import { requestLogger } from "./presentation/middlewares/req.logger.middleware";
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+
+app.use(requestLogger)
 app.use(metricsMiddleware)
 
 // app.use(cors({

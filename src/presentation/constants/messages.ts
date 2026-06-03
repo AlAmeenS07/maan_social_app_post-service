@@ -12,5 +12,8 @@ export const messages = {
     POST_STATUS_UPDATED : "Post listing status updated",
     POST_CONTENT_REQUIRED : "Post content is required !",
     POST_ALREADY_DELETED : "Post already deleted",
-    POST_NOT_DELETED : "Post is not deleted"
+    POST_NOT_DELETED : "Post is not deleted",
+    POST_SERVICE : "post-service",
+    REQUEST_COMPLETED : "REQUEST_COMPLETED",
+    REQUEST_FAILED : "REQUEST_FAILED"
 }
